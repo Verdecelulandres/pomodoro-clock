@@ -22,6 +22,7 @@ function App() {
     setBreakLength(initialVals[2]);
     setIsRunning(initialVals[0]);
     setIsBreak(initialVals[0]);
+    stopSound();
   }
 
   //If we start the timer this will trigger the countdown function every second
@@ -75,6 +76,7 @@ function App() {
     if(sec === '00'){
       if(min === '00'){
         //play alarm
+        playSound();
         //start break counter
         setIsBreak(!isBreak); //toggles break or study
         if(isBreak){  //If we reach the end and is a break we change to session
@@ -92,6 +94,16 @@ function App() {
     }
     let newTime = min.padStart(2,'0') + ':' + sec.padStart(2,'0');
     setCurrentTime(newTime);
+  }
+
+  function playSound() {
+    let alarm = document.getElementById('beep');
+    alarm.play();
+  }
+
+  function stopSound() {
+    let alarm = document.getElementById('beep');
+    alarm.pause();
   }
 
   return (
@@ -116,7 +128,7 @@ function App() {
             
               <div id='session-label'>Session Length</div>
               <div className='length-container'>
-                <button id='session-decrement' onClick={() => {
+                <button id='session-decrement' onClick={() => { 
                   if(sessionlength > 1 && !isOn ){setSessionLength(sessionlength-1); setIsRunning(false)}}}><FontAwesomeIcon icon={faAngleDown}/></button>
                 <div id='session-length'>{sessionlength}</div>
                 <button id='session-increment'onClick={() => {
@@ -141,6 +153,7 @@ function App() {
               </div>
           </div>
         </div>
+        <audio id="beep" preload="auto" src="https://cdn.freecodecamp.org/testable-projects-fcc/audio/BeepSound.wav"></audio>
       </div>
     </div>
   );
