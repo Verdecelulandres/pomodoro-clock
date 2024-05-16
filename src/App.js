@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp, faPlay, faPause, faRepeat } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
+  //State variables
   const initialVals = [false, 25, 5];
   const[sessionlength, setSessionLength] = useState(initialVals[1]);
   const[breakLength, setBreakLength] = useState(initialVals[2]);
@@ -13,8 +14,7 @@ function App() {
   const[isRunning, setIsRunning] = useState(initialVals[0]);
   const[isBreak, setIsBreak] = useState(initialVals[0]);
 
-
- 
+  //Returns state to original values
   function resetVals() {
     setIsOn(initialVals[0]);
     setSessionLength(initialVals[1]);
@@ -23,6 +23,8 @@ function App() {
     setIsRunning(initialVals[0]);
     setIsBreak(initialVals[0]);
   }
+
+  //If we start the timer this will trigger the countdown function every second
   useEffect(() => {
     let timer;
     if (isOn && isRunning) {
@@ -31,30 +33,38 @@ function App() {
     return () => clearTimeout(timer);
   }, [isOn, isRunning, currentTime]);
 
+  //This makes sure we display the correct time on loading
   useEffect(() => {
     if (!isOn && !isRunning) {
-      setCurrentTime(`${sessionlength}:00`);
-      //console.log('We are in use effect');
+      if (isBreak) {
+        setCurrentTime(`${breakLength}:00`);
+      } else {
+        setCurrentTime(`${sessionlength}:00`);
+      }
     }
-  }, [sessionlength, isOn, isRunning]);
+  }, [sessionlength, breakLength, isOn, isRunning, isBreak]);
 
-  // Modify displayTime function
+  // Displays the correct time 
   function displayTime() {
     if (isOn || isRunning) {
-      //console.log('timer should be on');
+
       return currentTime;
     } else if(!isRunning){
-      //console.log('timer should be paused');
-      return sessionlength + ':00';
+        if(isBreak){
+          return breakLength + ':00';
+        } else {
+          return sessionlength + ':00';
+        }
+
     }
   }
-  
+  //Displays the correct label for the counter
   function breakOrStudy() {
     if(isBreak) {
-      return 'Break time!';
+      return 'Break';
     }
     else {
-      return 'Study Session';
+      return 'Session';
     }
   }
 
@@ -116,10 +126,18 @@ function App() {
               <div id='break-label'>Break Length</div>
               <div className='length-container'>
                 <button id='break-decrement' onClick={()=>{
-                  if(breakLength > 1 && !isOn) {setBreakLength(breakLength-1)}}}><FontAwesomeIcon icon={faAngleDown}/></button>
+                  if(breakLength > 1 && !isOn) {
+                    setBreakLength(breakLength-1);
+                     if(isBreak){setCurrentTime(breakLength);setIsRunning(false)}
+                  }
+                  }}><FontAwesomeIcon icon={faAngleDown}/></button>
                 <div id='break-length'>{breakLength}</div>
                 <button id='break-increment' onClick={()=>{
-                  if(breakLength < 60 && !isOn) {setBreakLength(breakLength+1)}}}><FontAwesomeIcon icon={faAngleUp} /></button>
+                  if(breakLength < 60 && !isOn) {
+                    setBreakLength(breakLength+1); 
+                    if(isBreak){setCurrentTime(breakLength); setIsRunning(false)}
+                    }
+                  }}><FontAwesomeIcon icon={faAngleUp} /></button>
               </div>
           </div>
         </div>
